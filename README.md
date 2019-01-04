@@ -1,4 +1,5 @@
 # Projeto SQLLOADER
+
 Solução criada para automatizar o processo de carregar arquivos do tipo .txt e .csv com layout definido para tabelas do banco de dados Oracle. 
 
 ### Problema
