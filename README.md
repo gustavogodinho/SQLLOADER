@@ -10,4 +10,6 @@ Foi criado uma tela em .net onde o Analista Funcional passa as informações nec
 de dados Oracle.
 ```
 Componente utilizado do Oracle: sqlldr.dll 
+* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
+
 ```
