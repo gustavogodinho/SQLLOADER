@@ -1,4 +1,3 @@
-# SQLLOADER
 
 A Solução foi criada para automatizar o processo de carregar arquivos do tipo .txt e .csv para o banco de dados Oracle. 
 
