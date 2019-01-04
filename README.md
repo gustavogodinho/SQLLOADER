@@ -3,7 +3,8 @@ A Solução foi criada para automatizar o processo de carregar arquivos do tipo 
 
 ### Problema
 ```
-Alta volume de solicitações para o setor tecnico para importar arquivos do tipo .txt e .csv para o banco de dados Oracle
+Alta volume de solicitações para o setor tecnico para importar arquivos do tipo .txt e .csv para 
+o banco de dados Oracle
 ```
 
 
