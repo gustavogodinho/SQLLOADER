@@ -8,6 +8,6 @@ Alto volume de solicitações para o setor tecnico para importar arquivos do tip
 ### Solução 
 Foi criado uma tela em .net onde o Analista Funcional passa as informações necessarias para importar um arquivo para o banco 
 de dados Oracle.
-'''
+```
 Componente utilizado do Oracle: sqlldr.dll 
-'''
+```
