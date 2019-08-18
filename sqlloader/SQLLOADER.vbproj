@@ -76,7 +76,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
@@ -165,7 +165,6 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
-    <None Include="SQLLOADER_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -186,10 +185,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ICO\favicon %281%29.ico" />
-    <Content Include="ICO\favicon %283%29.ico" />
-    <Content Include="ICO\favicon %284%29.ico" />
-    <None Include="Resources\Icon1.ico" />
-    <None Include="Resources\Icon2.ico" />
     <Content Include="ZDYFQFFR.ICO" />
   </ItemGroup>
   <ItemGroup />
