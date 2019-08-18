@@ -1,7 +1,8 @@
 ﻿Imports System.Data.OleDb
 Imports System.IO
 Imports System.Threading
-Imports SQLLOADER.ArqControlBat
+Imports SQLLOADER.ArqControl
+
 
 
 
@@ -339,8 +340,8 @@ Public Class wfMain
 
             '----apaga Bad_file se não existir----'
             Dim sDir As String = "C:\SQLLOADER\bad_file_" & Me.cmbDataBase.SelectedValue & ".bad"
-            If System.IO.File.Exists(sDir) Then
-                System.IO.File.Delete(sDir)
+            If File.Exists(sDir) Then
+                File.Delete(sDir)
             End If
 
             Dim drc As DataGridViewRowCollection = DataGridTabela.Rows
