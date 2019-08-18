@@ -100,7 +100,7 @@ Public Class wfMain
 
     Private Sub wfMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        
+        'teste
 
         '------------------>>>>Verifica se a aplicação já esta aberta <<<<-----------------------------
         Dim objMutex As Mutex
