@@ -88,10 +88,11 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SQLLOADER.ArqControlBat">
-      <HintPath>..\..\SQLLOADER.ArqControlBat\SQLLOADER.ArqControlBat\bin\Debug\netcoreapp2.2\SQLLOADER.ArqControlBat.dll</HintPath>
+    <Reference Include="SQLLOADER.ArqControl">
+      <HintPath>..\SQLLOADER.ArqControl\bin\Debug\netstandard2.0\SQLLOADER.ArqControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -190,7 +191,6 @@
     <Content Include="ICO\favicon %281%29.ico" />
     <Content Include="ZDYFQFFR.ICO" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
