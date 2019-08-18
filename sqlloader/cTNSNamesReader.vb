@@ -40,7 +40,7 @@ Public Class cTNSNamesReader
                             For iCount = 0 To Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Count - 1
                                 ' s_TnsNames = fRetiraCaracter(Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Item(iCount).Value.Trim.Substring(0, Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Item(iCount).Value.Trim.IndexOf(" "))).Trim
 
-                                s_TnsNames = fRetiraCaracter(Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Item(iCount).Value.Trim)
+                                s_TnsNames = FRetiraCaracter(Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Item(iCount).Value.Trim)
 
                                 If s_TnsNames <> "" Then
                                     DBNamesCollection.Add(s_TnsNames)
@@ -61,22 +61,20 @@ Public Class cTNSNamesReader
     End Function
 
 
-    Private Function fRetiraCaracter(ByVal sTnsNames As String) As String
+    Private Function FRetiraCaracter(ByVal sTnsNames As String) As String
         Dim iTam As Integer = sTnsNames.Length
         Dim sTnsNameLimpo As String = ""
-        Dim sTnsNameLimpo2 As String = ""
-        Dim sTnsNameLimpo3 As String = ""
-        Dim sCaracter As String = ""
+        Dim i As Integer
 
-        Dim i As Integer = 0
         For i = 0 To iTam - 1
-            sCaracter = sTnsNames.Substring(i, 1).Trim
+            Dim sCaracter As String = sTnsNames.Substring(i, 1).Trim
+
             If sCaracter Like "[A-Za-z0-9_.,]" Then
-                sTnsNameLimpo = sTnsNameLimpo + sCaracter
+                sTnsNameLimpo += sCaracter
             End If
         Next
 
-        sTnsNameLimpo2 = sTnsNameLimpo.Replace("WORLD", "").Replace(".", "").Replace("world", "")
+        Dim sTnsNameLimpo2 As String = sTnsNameLimpo.Replace("WORLD", "").Replace(".", "").Replace("world", "")
 
 
         Return sTnsNameLimpo2

@@ -1,11 +1,5 @@
-﻿Imports System
-Imports System.Data
-Imports System.Text
-Imports System.Data.OleDb
-Imports System.Collections.Generic
-Imports System.Configuration
+﻿Imports System.Data.OleDb
 Imports System.IO
-Imports System.Net.Mail
 Imports System.Threading
 
 Public Class wfMain
@@ -98,9 +92,8 @@ Public Class wfMain
 
     End Sub
 
-    Private Sub wfMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub WfMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        'teste
 
         '------------------>>>>Verifica se a aplicação já esta aberta <<<<-----------------------------
         Dim objMutex As Mutex
@@ -271,28 +264,30 @@ Public Class wfMain
         Dim sArquivo As System.IO.FileStream
         Dim sFluxoTexto As IO.StreamWriter
 
+
+
 10:     Try
 
             If IO.File.Exists(sPath2) Then
 
-                File.Delete("C:\SQLLOADER\User.ini")
+                File.Delete(sPath2)
 
             End If
 
 
             If IO.File.Exists(sPath) Then
 
-                File.Delete("C:\SQLLOADER\tns.ini")
+                File.Delete(sPath)
 
             End If
 20:
-            sArquivo = File.Create("C:\SQLLOADER\tns.ini")
+            sArquivo = File.Create(sPath)
             sFluxoTexto = New IO.StreamWriter(sArquivo)
             sFluxoTexto.WriteLine(Me.txtTnsNames.Text)
             sFluxoTexto.Close()
 
             '==================================================== Grava o Usuario 
-            sArquivo = File.Create("C:\SQLLOADER\User.ini")
+            sArquivo = File.Create(sPath2)
             sFluxoTexto = New IO.StreamWriter(sArquivo)
             sFluxoTexto.WriteLine(Me.txtUser.Text)
             sFluxoTexto.Close()
@@ -368,7 +363,7 @@ Public Class wfMain
             'Dim sColuna = txtColuna.Text.Trim
             Dim sMontaValorDefault As String = ""
 
-            
+
 20:
             sArqControl = "OPTIONS (ERRORS=" & sNroErro & ", SILENT=(FEEDBACK))" & vbCrLf
             sArqControl = sArqControl & "LOAD DATA" & vbCrLf
@@ -407,6 +402,7 @@ Public Class wfMain
                     Dim sConta As Integer = 1
 60:
                     slinhaPOS = "(" & vbCrLf
+
                     For i As Integer = 0 To drc.Count - 1
                         sCampo1 = drc(i).Cells(0).Value
                         sCampo2 = drc(i).Cells(1).Value
@@ -489,7 +485,7 @@ Public Class wfMain
 110:
                     System.Diagnostics.Process.Start(DefaultContrlFileBAT)
 
-                   
+
 
                 ElseIf rdFieldsTerminated.Checked = True Then
 
@@ -506,7 +502,7 @@ Public Class wfMain
                     sArqControl = sArqControl & "TRAILING NULLCOLS" & vbCrLf
 
 
-                    
+
 130:
                     Dim sSoma As Integer = 0
 
@@ -641,7 +637,6 @@ Public Class wfMain
 
         Dim DefaultLogFile As String = "C:\SQLLOADER\logerro.txt"
 
-
         Try
             Shell("notepad.exe " + DefaultLogFile, AppWinStyle.MaximizedFocus)
 
@@ -667,13 +662,13 @@ Public Class wfMain
                 Exit Sub
             End If
 30:
-            sSql = "SELECT COLUNAS.COLUMN_NAME AS COLUNA," & _
-                    "COLUNAS.DATA_TYPE AS TIPO," & _
-                    "DECODE(COLUNAS.DATA_PRECISION, NULL, COLUNAS.CHAR_COL_DECL_LENGTH, COLUNAS.DATA_PRECISION)  AS TAMANHO," & _
-                    "COLUNAS.DATA_SCALE as PRECISAO," & _
-                    "COLUNAS.NULLABLE AS EH_NULO" & _
-            " FROM USER_TABLES TABELAS, USER_TAB_COLUMNS COLUNAS" & _
-            " WHERE TABELAS.TABLE_NAME = COLUNAS.TABLE_NAME" & _
+            sSql = "SELECT COLUNAS.COLUMN_NAME AS COLUNA," &
+                    "COLUNAS.DATA_TYPE AS TIPO," &
+                    "DECODE(COLUNAS.DATA_PRECISION, NULL, COLUNAS.CHAR_COL_DECL_LENGTH, COLUNAS.DATA_PRECISION)  AS TAMANHO," &
+                    "COLUNAS.DATA_SCALE as PRECISAO," &
+                    "COLUNAS.NULLABLE AS EH_NULO" &
+            " FROM USER_TABLES TABELAS, USER_TAB_COLUMNS COLUNAS" &
+            " WHERE TABELAS.TABLE_NAME = COLUNAS.TABLE_NAME" &
             " AND TABELAS.TABLE_NAME = '" & sTable & "' order by COLUNAS.column_id"
 40:
             exibeDados(sSql, cmbDataBase.SelectedValue.ToString)
@@ -708,8 +703,6 @@ Public Class wfMain
             fMontaMascara = "'" & sStrInt & "'"
         End If
     End Function
-
-
 
     Private Sub rbPOSITION_CheckedChanged(sender As Object, e As EventArgs) Handles rbPOSITION.CheckedChanged
 

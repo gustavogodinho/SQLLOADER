@@ -1,7 +1,8 @@
-﻿Imports System.Data
-Imports System.Data.OleDb
+﻿Imports System.Data.OleDb
 
 Public Class cFuncoes
+
+
     Public Sub CarregaCombo(ByVal cbo As ComboBox, ByVal strsql As String, ByVal sBanco As String, ByRef sRet As String, sUser As String, sPwd As String)
 
 10:
@@ -73,10 +74,10 @@ Public Class cFuncoes
                 .SelectionMode = DataGridViewSelectionMode.FullRowSelect
                 .MultiSelect = False
                 .AllowUserToResizeColumns = False
-                .ColumnHeadersHeightSizeMode = _
+                .ColumnHeadersHeightSizeMode =
                 DataGridViewColumnHeadersHeightSizeMode.DisableResizing
                 .AllowUserToResizeRows = False
-                .RowHeadersWidthSizeMode = _
+                .RowHeadersWidthSizeMode =
                 DataGridViewRowHeadersWidthSizeMode.DisableResizing
                 .DefaultCellStyle.SelectionBackColor = Color.Blue
                 .DefaultCellStyle.SelectionForeColor = Color.White

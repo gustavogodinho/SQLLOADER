@@ -13,10 +13,12 @@ Public Class cLogErro
             Else
                 objLogFile = File.AppendText(DefaultLogFile)
             End If
+
             msg = CStr(FormatDateTime(Data_hoje, DateFormat.GeneralDate)) & " - " & msg
             objLogFile.WriteLine(msg)
             objLogFile.Flush()
             objLogFile.Close()
+
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
