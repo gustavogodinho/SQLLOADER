@@ -1,6 +1,9 @@
 ﻿Imports System.Data.OleDb
 Imports System.IO
 Imports System.Threading
+Imports SQLLOADER.ArqControlBat
+
+
 
 Public Class wfMain
     Dim sFuncao As New cFuncoes
@@ -343,18 +346,18 @@ Public Class wfMain
             Dim drc As DataGridViewRowCollection = DataGridTabela.Rows
             Dim DefaultContrlFile As String = "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".ctl"
             Dim DefaultContrlFileBAT As String = "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".bat"
-            Dim sLinhaComando As String = ""
+            Dim sLinhaComando As String
             Dim sNomeArqs As String = ""
-            Dim sArqControl As String = ""
+            Dim sArqControl As String
             Dim sArqControlBat As String = ""
             Dim sNroErro As String = Me.txtError.Text.Trim
-            Dim sCampo1 As String = ""
-            Dim sCampo2 As String = ""
-            Dim sCampo3 As String = ""
-            Dim sTam As String = ""
-            Dim sPrec As String = ""
-            Dim sInt As String = ""
-            Dim sMontaMaskNumber As String = ""
+            Dim sCampo1 As String
+            Dim sCampo2 As String
+            Dim sCampo3 As String
+            Dim sTam As String
+            Dim sPrec As String
+            Dim sInt As String
+            Dim sMontaMaskNumber As String
             Dim sRowsCommit As String = Me.txtRows.Text.Trim
 
             Dim sLayout As String = ""
@@ -377,17 +380,17 @@ Public Class wfMain
                         sNomeArqs = sNomeArqs & "INFILE '" & Me.txtInfile.Text & itemChecked.ToString().Trim & "'" & vbCrLf
                     Next
 40:
-                    sArqControl = sArqControl & sNomeArqs
-                    sArqControl = sArqControl & "BADFILE '" & "C:\SQLLOADER\bad_file_" & Me.cmbDataBase.SelectedValue & ".bad'" & vbCrLf
-                    sArqControl = sArqControl & "DISCARDFILE '" & "C:\SQLLOADER\descarte_file_" & Me.cmbDataBase.SelectedValue & ".dsc'" & vbCrLf
+                    sArqControl &= sNomeArqs
+                    sArqControl += "BADFILE '" & "C:\SQLLOADER\bad_file_" & Me.cmbDataBase.SelectedValue & ".bad'" & vbCrLf
+                    sArqControl += sArqControl & "DISCARDFILE '" & "C:\SQLLOADER\descarte_file_" & Me.cmbDataBase.SelectedValue & ".dsc'" & vbCrLf
                     'If Not chkLimparTabela.Checked Then
-                    sArqControl = sArqControl & "APPEND" & vbCrLf
+                    sArqControl += "APPEND" & vbCrLf
                     'Else
                     'sArqControl = sArqControl & "REPLACE" & vbCrLf
                     'End If
-                    sArqControl = sArqControl & "PRESERVE BLANKS" & vbCrLf
-                    sArqControl = sArqControl & "INTO TABLE " & Me.cmbIntoTable.SelectedValue & vbCrLf
-                    sArqControl = sArqControl & "TRAILING NULLCOLS" & vbCrLf
+                    sArqControl += "PRESERVE BLANKS" & vbCrLf
+                    sArqControl += "INTO TABLE " & Me.cmbIntoTable.SelectedValue & vbCrLf
+                    sArqControl += "TRAILING NULLCOLS" & vbCrLf
 45:
                     'If txtFiltroLoader.Text.Trim <> "" Then
                     '    sArqControl = sArqControl & "WHEN " & txtFiltroLoader.Text.Trim.Replace("""", "'") & vbCrLf
@@ -462,15 +465,17 @@ Public Class wfMain
                     objLogFile.Flush()
                     objLogFile.Close()
 100:
-                    'sLinhaComando = "sqlldr userid=" + sUser + "@" & Me.cmbDataBase.SelectedValue & "/" + sPwd + " control='" & DefaultContrlFile & "' log='" & "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".log'"
-                    'sArqControlBat = sArqControlBat & sLinhaComando & vbCrLf
-                    'sArqControlBat = sArqControlBat & "%systemroot%\notepad.exe """ & "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".log"""
 
 
-                    sLinhaComando = "sqlldr userid=" + sUser + "@" & Me.cmbDataBase.SelectedValue & "/" + sPwd + " control='" & DefaultContrlFile & "' log='" & "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".log'"
-                    sArqControlBat = sArqControlBat & sLinhaComando
-                    sArqControlBat = sArqControlBat + "bindsize=512000 readsize=1024000 direct=True rows=" + sRowsCommit + vbCrLf
-                    sArqControlBat = sArqControlBat & "%systemroot%\notepad.exe """ & "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".log"""
+                    'dll monta arquivo bat
+                    Dim createArqControlBat As New ArqControlBat
+                    sArqControlBat = createArqControlBat.CreateArqControlBat(sUser,
+                                                                             Me.cmbDataBase.SelectedValue,
+                                                                             sPwd,
+                                                                             DefaultContrlFile,
+                                                                             "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue,
+                                                                             sRowsCommit)
+
 
 
                     If Directory.Exists(Path.GetDirectoryName(DefaultContrlFileBAT)) Then

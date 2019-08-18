@@ -90,6 +90,9 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="SQLLOADER.ArqControlBat">
+      <HintPath>..\..\SQLLOADER.ArqControlBat\SQLLOADER.ArqControlBat\bin\Debug\netcoreapp2.2\SQLLOADER.ArqControlBat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
