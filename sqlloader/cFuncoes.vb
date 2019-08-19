@@ -1,6 +1,6 @@
 ﻿Imports System.Data.OleDb
 
-Public Class cFuncoes
+Public Class CFuncoes
 
 
     Public Sub CarregaCombo(ByVal cbo As ComboBox, ByVal strsql As String, ByVal sBanco As String, ByRef sRet As String, sUser As String, sPwd As String)
@@ -48,10 +48,6 @@ Public Class cFuncoes
 
         Finally
 
-            '---------Apagando objeto da memoria---------'
-            dt = Nothing
-            cnn = Nothing
-            cmd = Nothing
 
         End Try
 

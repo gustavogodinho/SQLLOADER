@@ -1,26 +1,19 @@
 ﻿Imports System.Data.OleDb
 Imports System.IO
 Imports System.Threading
-Imports SQLLOADER.ArqControl
-
-
-
+Imports SQLLOADER.FileControl
 
 Public Class wfMain
-    Dim sFuncao As New cFuncoes
+    ReadOnly sFuncao As New CFuncoes
     Dim sVBanco As String
     Dim sTable As String
-    Dim sSelect, sDir, sBanco, sUser, sPwd As String
-    Dim pPathArq As OleDbParameter
-    Dim DA As OleDbDataAdapter
-    Dim SourceRowIndex As Integer = -1
+    Private sSelect As String
+
+    Private sUser As String
+    Private sPwd As String
     Dim dtSource As DataTable
 
-    Private Sub btnInfile_Click(sender As Object, e As EventArgs) Handles btnInfile.Click
-
-        Dim sArq As String = ""
-        Dim sNomeArq As String = ""
-
+    Private Sub BtnInfile_Click(sender As Object, e As EventArgs) Handles btnInfile.Click
         Try
 10:
             'Define as propriedades do controle FolderBrowserDialog
@@ -43,7 +36,8 @@ Public Class wfMain
             Dim i As Integer
 40:
             For i = 0 To sArqs.Length - 1 Step i + 1
-                sNomeArq = sArqs(i)
+                Dim sNomeArq As String = sArqs(i)
+
                 sNomeArq = sNomeArq.Replace(Me.txtInfile.Text, "")
                 sValor.Add(sNomeArq)
             Next
@@ -107,7 +101,7 @@ Public Class wfMain
         If objMutex.WaitOne(0, False) = False Then
 
             objMutex.Close()
-            objMutex = Nothing
+
 
             MessageBox.Show("Já existe uma instancia rodando desta aplicaçao.", ":: Alerta", MessageBoxButtons.OK, MessageBoxIcon.Stop)
             Me.Close()
@@ -160,7 +154,7 @@ Public Class wfMain
 
                 '----carrega a combo Banco----'
                 Dim sCaminhoTNS = txtTnsNames.Text
-                Dim TNSNamesReader As New cTNSNamesReader()
+                Dim TNSNamesReader As New CTNSNamesReader()
                 Me.cmbDataBase.DataSource = TNSNamesReader.LoadTNSNames(sCaminhoTNS)
 
             End If
@@ -196,7 +190,7 @@ Public Class wfMain
 
     End Sub
 
-    Private Sub btnTnsNames_Click(sender As Object, e As EventArgs) Handles btnTnsNames.Click
+    Private Sub BtnTnsNames_Click(sender As Object, e As EventArgs) Handles btnTnsNames.Click
 10:
         '------Limpa DataGrid------'
         DataGridTabela.DataSource = Nothing
@@ -214,7 +208,7 @@ Public Class wfMain
 20:
             '----carrega a combo Banco----'
             Dim sCaminhoTNS = txtTnsNames.Text
-            Dim TNSNamesReader As New cTNSNamesReader()
+            Dim TNSNamesReader As New CTNSNamesReader()
             Me.cmbDataBase.DataSource = TNSNamesReader.LoadTNSNames(sCaminhoTNS)
 
         Catch ex As Exception
@@ -225,7 +219,7 @@ Public Class wfMain
         End Try
     End Sub
 
-    Private Sub cmbDataBase_SelectedValueChanged(sender As Object, e As EventArgs) Handles cmbDataBase.SelectedValueChanged
+    Private Sub CmbDataBase_SelectedValueChanged(sender As Object, e As EventArgs) Handles cmbDataBase.SelectedValueChanged
 10:
         Dim sRetornoErro As String = ""
         sUser = Me.txtUser.Text.Trim.ToUpper
@@ -261,7 +255,7 @@ Public Class wfMain
         End Try
     End Sub
 
-    Private Sub wfMain_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
+    Private Sub WfMain_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
 
         Dim sPath As String = "C:\SQLLOADER\tns.ini"
         Dim sPath2 As String = "C:\SQLLOADER\User.ini"
@@ -307,7 +301,7 @@ Public Class wfMain
     End Sub
 
 
-    Private Sub btnCarrega_Click(sender As Object, e As EventArgs) Handles btnCarrega.Click
+    Private Sub BtnCarrega_Click(sender As Object, e As EventArgs) Handles btnCarrega.Click
 
 
         If Me.txtUser.Text = "" Then
@@ -337,7 +331,6 @@ Public Class wfMain
 
         Else
 
-
             '----apaga Bad_file se não existir----'
             Dim sDir As String = "C:\SQLLOADER\bad_file_" & Me.cmbDataBase.SelectedValue & ".bad"
             If File.Exists(sDir) Then
@@ -347,112 +340,31 @@ Public Class wfMain
             Dim drc As DataGridViewRowCollection = DataGridTabela.Rows
             Dim DefaultContrlFile As String = "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".ctl"
             Dim DefaultContrlFileBAT As String = "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".bat"
-            Dim sLinhaComando As String
             Dim sNomeArqs As String = ""
-            Dim sArqControl As String
-            Dim sArqControlBat As String = ""
+            Dim sArqControl As String = String.Empty
             Dim sNroErro As String = Me.txtError.Text.Trim
             Dim sCampo1 As String
             Dim sCampo2 As String
             Dim sCampo3 As String
-            Dim sTam As String
-            Dim sPrec As String
-            Dim sInt As String
-            Dim sMontaMaskNumber As String
             Dim sRowsCommit As String = Me.txtRows.Text.Trim
-
-            Dim sLayout As String = ""
-
-            'Dim sValorDefault = txtValorDefault.Text.Trim
-            'Dim sColuna = txtColuna.Text.Trim
-            Dim sMontaValorDefault As String = ""
-
-
+            Dim sLayout As String
 20:
-            sArqControl = "OPTIONS (ERRORS=" & sNroErro & ", SILENT=(FEEDBACK))" & vbCrLf
-            sArqControl = sArqControl & "LOAD DATA" & vbCrLf
-30:
+
+            Dim checkedItems As CheckedListBox.CheckedItemCollection = clbArquivos.CheckedItems
 
             Try
-
+                Dim sArqControlBat As String
                 If rbPOSITION.Checked = True Then
 
-                    For Each itemChecked In clbArquivos.CheckedItems
-                        sNomeArqs = sNomeArqs & "INFILE '" & Me.txtInfile.Text & itemChecked.ToString().Trim & "'" & vbCrLf
-                    Next
-40:
-                    sArqControl &= sNomeArqs
-                    sArqControl += "BADFILE '" & "C:\SQLLOADER\bad_file_" & Me.cmbDataBase.SelectedValue & ".bad'" & vbCrLf
-                    sArqControl += sArqControl & "DISCARDFILE '" & "C:\SQLLOADER\descarte_file_" & Me.cmbDataBase.SelectedValue & ".dsc'" & vbCrLf
-                    'If Not chkLimparTabela.Checked Then
-                    sArqControl += "APPEND" & vbCrLf
-                    'Else
-                    'sArqControl = sArqControl & "REPLACE" & vbCrLf
-                    'End If
-                    sArqControl += "PRESERVE BLANKS" & vbCrLf
-                    sArqControl += "INTO TABLE " & Me.cmbIntoTable.SelectedValue & vbCrLf
-                    sArqControl += "TRAILING NULLCOLS" & vbCrLf
-45:
-                    'If txtFiltroLoader.Text.Trim <> "" Then
-                    '    sArqControl = sArqControl & "WHEN " & txtFiltroLoader.Text.Trim.Replace("""", "'") & vbCrLf
-                    'End If
+                    Dim drcCount As Object = drc
 
-                    'Me.pbProgresso.Step = 30
-                    'Me.pbProgresso.PerformStep()
-50:
-                    Dim sSoma As Integer = 0
-
-                    Dim slinhaPOS As String = ""
-                    Dim sConta As Integer = 1
-60:
-                    slinhaPOS = "(" & vbCrLf
-
-                    For i As Integer = 0 To drc.Count - 1
-                        sCampo1 = drc(i).Cells(0).Value
-                        sCampo2 = drc(i).Cells(1).Value
-                        Try
-                            sTam = drc(i).Cells(2).Value
-                        Catch ex As Exception
-                            sTam = 0
-                        End Try
-                        Try
-                            sPrec = drc(i).Cells(3).Value
-                        Catch ex As Exception
-                            sPrec = 0
-                        End Try
-70:
-                        'If sCampo1.Trim = sColuna.Trim Then
-                        '    sMontaValorDefault = " ""nvl(:" & sCampo1 & ",'" & sValorDefault & "')"""
-                        'End If
-
-                        If sCampo2.ToUpper = "VARCHAR2" Then
-                            sCampo2 = "CHAR" & " " & sMontaValorDefault
-                        ElseIf sCampo2.ToUpper = "NUMBER" Then
-                            If sPrec.Trim = "" Then sPrec = "0"
-                            sInt = CInt(sTam) - CInt(sPrec)
-                            sMontaMaskNumber = " ""TO_CHAR(:" & sCampo1 & "," & fMontaMascara(sInt, CInt(sPrec)) & ")"""
-
-                            sCampo2 = "CHAR" & sMontaMaskNumber & " " & sMontaValorDefault
-
-                        End If
-
-                        If sCampo2 = "DATE" Then
-                            sCampo3 = "8"
-                        Else
-                            sCampo3 = drc(i).Cells(2).Value
-                        End If
-
-                        slinhaPOS = slinhaPOS & sCampo1 & " POSITION (" & sConta.ToString & ":" & (sCampo3 + sConta) - 1 & ") " & sCampo2.ToString & "," & vbCrLf
-                        sConta = sConta + CInt(sCampo3)
-                        sMontaValorDefault = ""
-                    Next
-80:
-                    slinhaPOS = slinhaPOS.Trim
-                    slinhaPOS = slinhaPOS.Substring(0, slinhaPOS.Length - 1) & vbCrLf
-                    slinhaPOS = slinhaPOS & ")"
-
-                    sArqControl = sArqControl & slinhaPOS
-90:
+                    Dim arqControlLoader As New FileControlLoader
+                    sArqControl = arqControlLoader.CreateFileControlLoaderPOSITION(sNroErro,
+                                                                                  checkedItems,
+                                                                                  Me.txtInfile.Text,
+                                                                                  Me.cmbDataBase.SelectedValue,
+                                                                                  Me.cmbIntoTable.SelectedValue,
+                                                                                  drcCount)
                     Dim objLogFile As StreamWriter
                     Dim objLogFileBat As StreamWriter
 
@@ -467,17 +379,13 @@ Public Class wfMain
                     objLogFile.Close()
 100:
 
-
-                    'dll monta arquivo bat
-                    Dim createArqControlBat As New ArqControlBat
-                    sArqControlBat = createArqControlBat.CreateArqControlBat(sUser,
+                    Dim createArqControlBat As New FileControlBat
+                    sArqControlBat = createArqControlBat.CreateFileControlBat(sUser,
                                                                              Me.cmbDataBase.SelectedValue,
                                                                              sPwd,
                                                                              DefaultContrlFile,
                                                                              "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue,
                                                                              sRowsCommit)
-
-
 
                     If Directory.Exists(Path.GetDirectoryName(DefaultContrlFileBAT)) Then
                         objLogFileBat = File.CreateText(DefaultContrlFileBAT)
@@ -489,7 +397,7 @@ Public Class wfMain
                     objLogFileBat.Flush()
                     objLogFileBat.Close()
 110:
-                    System.Diagnostics.Process.Start(DefaultContrlFileBAT)
+                    Process.Start(DefaultContrlFileBAT)
 
 
 
@@ -499,15 +407,13 @@ Public Class wfMain
                         sNomeArqs = sNomeArqs & "INFILE '" & Me.txtInfile.Text & itemChecked.ToString().Trim & "'" & vbCrLf
                     Next
 120:
-                    sArqControl = sArqControl & sNomeArqs
-                    sArqControl = sArqControl & "BADFILE '" & "C:\SQLLOADER\bad_file_" & Me.cmbDataBase.SelectedValue & ".bad'" & vbCrLf
-                    sArqControl = sArqControl & "DISCARDFILE '" & "C:\SQLLOADER\descarte_file_" & Me.cmbDataBase.SelectedValue & ".dsc'" & vbCrLf
-                    sArqControl = sArqControl & "APPEND INTO TABLE " & Me.cmbIntoTable.SelectedValue & vbCrLf
-                    sArqControl = sArqControl & "FIELDS TERMINATED BY '" & Me.txtDelimitador.Text.Trim & "'" & vbCrLf
+                    sArqControl &= sNomeArqs
+                    sArqControl = sArqControl & "BADFILE '" & "C:\SQLLOADER\bad_file_" & cmbDataBase.SelectedValue & ".bad'" & vbCrLf
+                    sArqControl = sArqControl & "DISCARDFILE '" & "C:\SQLLOADER\descarte_file_" & cmbDataBase.SelectedValue & ".dsc'" & vbCrLf
+                    sArqControl = sArqControl & "APPEND INTO TABLE " & cmbIntoTable.SelectedValue & vbCrLf
+                    sArqControl = sArqControl & "FIELDS TERMINATED BY '" & txtDelimitador.Text.Trim & "'" & vbCrLf
                     sArqControl = sArqControl & "OPTIONALLY ENCLOSED BY '" & """'" & vbCrLf
                     sArqControl = sArqControl & "TRAILING NULLCOLS" & vbCrLf
-
-
 
 130:
                     Dim sSoma As Integer = 0
@@ -536,7 +442,7 @@ Public Class wfMain
 140:
                     sLayout = sLayout.Substring(0, sLayout.Trim.Length - 1)
                     sLayout = sLayout & ")" & vbCrLf
-                    sArqControl = sArqControl & sLayout
+                    sArqControl &= sLayout
 
 150:
                     Dim objLogFile As StreamWriter
@@ -552,10 +458,14 @@ Public Class wfMain
                     objLogFile.Flush()
                     objLogFile.Close()
 160:
-                    sLinhaComando = "sqlldr userid=" + sUser + "@" & Me.cmbDataBase.SelectedValue & "/" + sPwd + " control='" & DefaultContrlFile & "' log='" & "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".log'"
-                    sArqControlBat = sArqControlBat & sLinhaComando
-                    sArqControlBat = sArqControlBat + "bindsize=512000 readsize=1024000 direct=True rows=" + sRowsCommit + vbCrLf
-                    sArqControlBat = sArqControlBat & "%systemroot%\notepad.exe """ & "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue & ".log"""
+
+                    Dim createArqControlBat As New FileControlBat
+                    sArqControlBat = createArqControlBat.CreateFileControlBat(sUser,
+                                                                             Me.cmbDataBase.SelectedValue,
+                                                                             sPwd,
+                                                                             DefaultContrlFile,
+                                                                             "C:\SQLLOADER\control_" & Me.cmbIntoTable.SelectedValue,
+                                                                             sRowsCommit)
 
                     If Directory.Exists(Path.GetDirectoryName(DefaultContrlFileBAT)) Then
                         objLogFileBat = File.CreateText(DefaultContrlFileBAT)
@@ -567,10 +477,8 @@ Public Class wfMain
                     objLogFileBat.Flush()
                     objLogFileBat.Close()
 170:
-                    System.Diagnostics.Process.Start(DefaultContrlFileBAT)
+                    Process.Start(DefaultContrlFileBAT)
 
-                    'Me.pbProgresso.Step = 70
-                    'Me.pbProgresso.PerformStep()
                 End If
 
 
@@ -583,13 +491,13 @@ Public Class wfMain
 
             End Try
 
-            drc = Nothing
+
 
         End If
 
     End Sub
 
-    Private Sub exibeDados(ByVal selectCommand As String, ByVal sBanco As String)
+    Private Sub ExibeDados(ByVal selectCommand As String, ByVal sBanco As String)
 
 10:
         Dim strConn As String = "Provider=OraOLEDB.Oracle;Data Source=" + sBanco + ";User ID=" + sUser + ";Password=" + sPwd
@@ -606,7 +514,7 @@ Public Class wfMain
         Dim table As New DataTable()
 20:
         Try
-            table.Locale = System.Globalization.CultureInfo.InvariantCulture
+            table.Locale = Globalization.CultureInfo.InvariantCulture
             da.Fill(table)
             bsCargaTables.DataSource = table
 
@@ -628,11 +536,6 @@ Public Class wfMain
 
         Finally
 
-            cnn = Nothing
-            commandBuilder = Nothing
-            cmd = Nothing
-            da = Nothing
-            table = Nothing
 
         End Try
 
@@ -656,10 +559,9 @@ Public Class wfMain
     End Sub
 
 
-    Private Sub cmbIntoTable_SelectedValueChanged(sender As Object, e As EventArgs) Handles cmbIntoTable.SelectedValueChanged
+    Private Sub CmbIntoTable_SelectedValueChanged(sender As Object, e As EventArgs) Handles cmbIntoTable.SelectedValueChanged
 
 10:
-        Dim sSql As String = ""
 
         Try
 20:
@@ -668,16 +570,17 @@ Public Class wfMain
                 Exit Sub
             End If
 30:
-            sSql = "SELECT COLUNAS.COLUMN_NAME AS COLUNA," &
-                    "COLUNAS.DATA_TYPE AS TIPO," &
-                    "DECODE(COLUNAS.DATA_PRECISION, NULL, COLUNAS.CHAR_COL_DECL_LENGTH, COLUNAS.DATA_PRECISION)  AS TAMANHO," &
-                    "COLUNAS.DATA_SCALE as PRECISAO," &
-                    "COLUNAS.NULLABLE AS EH_NULO" &
-            " FROM USER_TABLES TABELAS, USER_TAB_COLUMNS COLUNAS" &
-            " WHERE TABELAS.TABLE_NAME = COLUNAS.TABLE_NAME" &
-            " AND TABELAS.TABLE_NAME = '" & sTable & "' order by COLUNAS.column_id"
+            Dim sSql As String = "SELECT COLUNAS.COLUMN_NAME AS COLUNA," &
+            "COLUNAS.DATA_TYPE AS TIPO," &
+            "DECODE(COLUNAS.DATA_PRECISION, NULL, COLUNAS.CHAR_COL_DECL_LENGTH, COLUNAS.DATA_PRECISION)  AS TAMANHO," &
+            "COLUNAS.DATA_SCALE as PRECISAO," &
+            "COLUNAS.NULLABLE AS EH_NULO" &
+    " FROM USER_TABLES TABELAS, USER_TAB_COLUMNS COLUNAS" &
+    " WHERE TABELAS.TABLE_NAME = COLUNAS.TABLE_NAME" &
+    " AND TABELAS.TABLE_NAME = '" & sTable & "' order by COLUNAS.column_id"
+
 40:
-            exibeDados(sSql, cmbDataBase.SelectedValue.ToString)
+            ExibeDados(sSql, cmbDataBase.SelectedValue.ToString)
 
         Catch ex As Exception
             If Not ex.Message = "A conversão do tipo 'DataRowView' no tipo 'String' não é válida." Then
@@ -690,27 +593,7 @@ Public Class wfMain
 
     End Sub
 
-    Private Function fMontaMascara(ByVal iNroInt As Integer, ByVal iNroPrec As Integer) As String
-        Dim i As Integer = 0
-        Dim sStrInt As String = ""
-        Dim sStrPrec As String = ""
-        For i = 1 To iNroInt
-            sStrInt = sStrInt & "9"
-        Next
-        If iNroPrec <> 0 Then
-            For i = 1 To iNroPrec
-                sStrPrec = sStrPrec & "9"
-            Next
-        End If
-
-        If iNroPrec <> 0 Then
-            fMontaMascara = "'" & sStrInt & "," & sStrPrec & "'"
-        Else
-            fMontaMascara = "'" & sStrInt & "'"
-        End If
-    End Function
-
-    Private Sub rbPOSITION_CheckedChanged(sender As Object, e As EventArgs) Handles rbPOSITION.CheckedChanged
+    Private Sub RbPOSITION_CheckedChanged(sender As Object, e As EventArgs) Handles rbPOSITION.CheckedChanged
 
         If rbPOSITION.Checked = True Then
             txtDelimitador.Enabled = False
@@ -720,7 +603,7 @@ Public Class wfMain
 
     End Sub
 
-    Private Sub rdFieldsTerminated_CheckedChanged(sender As Object, e As EventArgs) Handles rdFieldsTerminated.CheckedChanged
+    Private Sub RdFieldsTerminated_CheckedChanged(sender As Object, e As EventArgs) Handles rdFieldsTerminated.CheckedChanged
 
         If rdFieldsTerminated.Checked = True Then
             txtDelimitador.Enabled = True
