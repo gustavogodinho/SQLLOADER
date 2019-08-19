@@ -2,16 +2,12 @@
 Imports System.Text.RegularExpressions
 Imports System.IO
 
-Public Class cTNSNamesReader
+Public Class CTNSNamesReader
 
-    Private strOracleHome As String = ""
     Public strTNSNAMESORAFilePath As String = ""
-    Dim gPathgeral As String = ""
 
     Public Function LoadTNSNames(ByVal TNSNAMES As String) As ArrayList
         Dim sTNSNames As String = TNSNAMES
-        Dim sDir As String = ""
-        Dim s_TnsNames As String = ""
         Dim DBNamesCollection As New ArrayList
         Dim RegExPattern As String = "[\n][\s]*[^\(][a-zA-Z0-9_.]+[\s]*=[\s]*\("
 
@@ -30,7 +26,7 @@ Public Class cTNSNamesReader
             Try
 30:
                 '//check out that file does physically exists
-                Dim fiTNS As New System.IO.FileInfo(sTNSNames)
+                Dim fiTNS As New FileInfo(sTNSNames)
                 If (fiTNS.Exists) Then
                     If (fiTNS.Length > 0) Then
                         '//read tnsnames.ora file
@@ -40,7 +36,7 @@ Public Class cTNSNamesReader
                             For iCount = 0 To Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Count - 1
                                 ' s_TnsNames = fRetiraCaracter(Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Item(iCount).Value.Trim.Substring(0, Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Item(iCount).Value.Trim.IndexOf(" "))).Trim
 
-                                s_TnsNames = FRetiraCaracter(Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Item(iCount).Value.Trim)
+                                Dim s_TnsNames As String = FRetiraCaracter(Regex.Matches(My.Computer.FileSystem.ReadAllText(fiTNS.FullName), RegExPattern).Item(iCount).Value.Trim)
 
                                 If s_TnsNames <> "" Then
                                     DBNamesCollection.Add(s_TnsNames)
